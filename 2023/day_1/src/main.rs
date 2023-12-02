@@ -8,7 +8,7 @@ fn main() {
         for index in 0..line.len() {
             let remaining_line = &line[index..];
 
-            let char = get_first_number(&remaining_line);
+            let char = get_first_number(remaining_line);
 
             if let '0'..='9' = char {
                 if left_most == ' ' {
