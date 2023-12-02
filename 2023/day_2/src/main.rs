@@ -20,6 +20,7 @@ impl FromStr for Color {
     }
 }
 
+#[allow(dead_code)]
 impl Color {
     pub fn max(&self) -> u32 {
         match self {
@@ -41,20 +42,38 @@ fn main() {
         return (id, game.1);
     });
 
-    let result: u32 = games.filter_map(|game| {
-        let game_result = game.1.split("; ").find(|x| {
-            return x.split(", ").find(|y| {
-                let nb_color = y.split_once(' ').unwrap();
+    let result: u32 = games.map(|game| {
+        let mut red_min = 0;
+        let mut blue_min = 0;
+        let mut green_min = 0;
 
-                return Color::from_str(nb_color.1).unwrap().max() < nb_color.0.parse::<u32>().unwrap();
-            }).is_some();
+        game.1.split("; ").for_each(|x| {
+            x.split(", ").for_each(|y| {
+                let nb_color = y.split_once(' ').unwrap();
+                let color = Color::from_str(nb_color.1).unwrap(); 
+                let nb = nb_color.0.parse::<u32>().unwrap();
+
+                match color {
+                    Color::Blue => {
+                        if nb > blue_min {
+                            blue_min = nb;
+                        }
+                    },
+                    Color::Red => {
+                        if nb > red_min {
+                            red_min = nb;
+                        }
+                    },
+                    Color::Green => {
+                        if nb > green_min {
+                            green_min = nb;
+                        }
+                    },
+                }
+            });
         });
 
-        if game_result.is_some() {
-            None
-        } else {
-            Some(game.0)
-        }
+        return red_min * blue_min * green_min;
     }).sum();
 
     println!("{result}");
