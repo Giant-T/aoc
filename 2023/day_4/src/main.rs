@@ -1,9 +1,15 @@
 use std::collections::HashSet;
 
+#[derive(Debug)]
+struct Card {
+    pub score: usize,
+    pub quantity: usize,
+}
+
 fn main() {
     let input = include_str!("../input.txt");
 
-    let sum: u32 = input.lines()
+    let mut cards: Vec<Card> = input.lines()
         .map(|line| 
             line.split_once(':').unwrap().1.split_once(" | ").unwrap()
         ).map(|(winning_nums, nums)| {
@@ -16,12 +22,24 @@ fn main() {
 
             for num in nums {
                 if let Some(_) = winning_nums.get(&num) {
-                    score = (score << 1) | (score == 0) as u32;
+                    score += 1;
                 }
             }
 
-            return score;
-        }).sum();
+            return Card { score, quantity: 1};
+        }).collect();
+
+    for index in 0..cards.len() {
+        let card = &cards[index];
+        let quantity = card.quantity;
+        for offset in 1..=card.score {
+            if let Some(n_card) = cards.get_mut(index + offset) {
+                n_card.quantity += quantity;
+            }
+        }
+    }
+
+    let sum: usize = cards.iter().map(|card| card.quantity).sum();
 
     println!("{sum}");
 }
