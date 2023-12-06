@@ -52,7 +52,7 @@ type Range = (usize, usize);
 fn main() {
     let input = include_str!("../input.txt");
 
-    let result = solve_part2(input);
+    let result = brute_force_part2(input);
 
     println!("result: {result}");
 }
@@ -130,7 +130,6 @@ fn find_locations_ranges(seeds: &Vec<Range>, maps: &Vec<Vec<ConversionMap>>) -> 
                     ranges[i] = current_range;
                 }
             }
-
             ranges
         })
         .collect()
