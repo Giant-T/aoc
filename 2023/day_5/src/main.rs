@@ -65,14 +65,7 @@ fn solve_part2(input: &str) -> usize {
 
     let ranges = find_locations_ranges(&seeds, &maps);
 
-    println!("{ranges:?}");
-
-    ranges
-        .iter()
-        .flatten()
-        .map(|x| x.0)
-        .min()
-        .unwrap()
+    ranges.iter().flatten().map(|x| x.0).min().unwrap()
 }
 
 fn brute_force_part2(input: &str) -> usize {
