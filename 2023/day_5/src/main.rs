@@ -57,6 +57,64 @@ fn main() {
     println!("result: {result}");
 }
 
+fn solve_part1(input: &str) -> usize {
+    let mut chunks = input.split("\r\n\r\n");
+
+    let seeds: Vec<usize> = chunks
+        .next()
+        .unwrap()
+        .split(' ')
+        .filter_map(|x| x.parse().ok())
+        .collect();
+
+    let maps: Vec<Vec<ConversionMap>> = chunks
+        .map(|chunk| {
+            let mut lines = chunk.lines();
+            let _mapping = lines
+                .next()
+                .unwrap()
+                .split_once(' ')
+                .unwrap()
+                .0
+                .split_once("-to-")
+                .unwrap();
+
+            let conversion_maps = lines
+                .map(|line| {
+                    let mut nums = line.splitn(3, ' ');
+                    ConversionMap {
+                        destination_start: nums.next().unwrap().parse().unwrap(),
+                        source_start: nums.next().unwrap().parse().unwrap(),
+                        length: nums.next().unwrap().parse().unwrap(),
+                    }
+                })
+                .collect();
+
+            return conversion_maps;
+        })
+        .collect();
+
+    seeds
+        .iter()
+        .map(|seed| {
+            let mut num = *seed;
+
+            for map in &maps {
+                for conversion_map in map {
+                    if conversion_map.is_in_sources(&num) {
+                        num = conversion_map.convert(&num);
+                        break;
+                    }
+                }
+            }
+
+            num
+        })
+        .min()
+        .unwrap()
+}
+
+// Sadly doesn't work ;(
 fn solve_part2(input: &str) -> usize {
     let mut chunks = input.split("\r\n\r\n");
 
@@ -68,6 +126,7 @@ fn solve_part2(input: &str) -> usize {
     ranges.iter().flatten().map(|x| x.0).min().unwrap()
 }
 
+// Did work :)
 fn brute_force_part2(input: &str) -> usize {
     let mut chunks = input.split("\r\n\r\n");
 
@@ -190,6 +249,15 @@ mod test {
         let result = solve_part2(sample);
 
         assert_eq!(46, result);
+    }
+
+    #[test]
+    fn input() {
+        let input = include_str!("../input.txt");
+
+        let result = solve_part2(input);
+
+        assert_eq!(84_206_669, result);
     }
 
     #[test]
