@@ -53,7 +53,24 @@ fn solve_part2(input: &str) -> usize {
         .map(|node| traverse(navigation, node, &nodes))
         .collect();
 
-    let steps = 0;
+    let max_steps = steps_of_nodes.iter().max().unwrap();
+
+    let mut multiplier = 2;
+
+    // good enough
+    let mut steps;
+    loop {
+        steps = max_steps * multiplier;
+        let is_good = steps_of_nodes.iter().all(|num| {
+            return steps % num == 0;
+        });
+
+        if is_good {
+            break;
+        }
+
+        multiplier += 1;
+    }
 
     steps
 }
