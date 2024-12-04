@@ -36,8 +36,6 @@ fn part_one(buff: []const u8) !u32 {
             prev_str = str;
         }
 
-        std.debug.print("{s}\n", .{report});
-
         nb_of_safe += 1;
     }
 
