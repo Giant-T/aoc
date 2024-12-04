@@ -110,7 +110,7 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const timestamp = std.time.nanoTimestamp();
-    const res = try part_one(allocator, input, 1000);
+    const res = try part_two(allocator, input);
     std.debug.print("time: {}, value: {}\n", .{ std.time.nanoTimestamp() - timestamp, res });
 }
 
@@ -138,6 +138,45 @@ fn part_one(allocator: Allocator, buff: []const u8, lines: usize) !u32 {
     }
 
     return sum;
+}
+
+const CountMap = std.AutoHashMap(u32, u32);
+
+fn part_two(allocator: Allocator, buff: []const u8) !u32 {
+    var l_map = CountMap.init(allocator);
+    defer l_map.deinit();
+    var r_map = CountMap.init(allocator);
+    defer r_map.deinit();
+
+    var line_iter = std.mem.split(u8, buff, "\n");
+    while (line_iter.next()) |line| {
+        if (line.len == 0) break;
+        var nums = std.mem.split(u8, line, "   ");
+        const l_num = try std.fmt.parseInt(u32, nums.next().?, 10);
+
+        if (l_map.getPtr(l_num)) |count| {
+            count.* += 1;
+        } else {
+            try l_map.put(l_num, 1);
+        }
+
+        const r_num = try std.fmt.parseInt(u32, nums.next().?, 10);
+
+        if (r_map.getPtr(r_num)) |count| {
+            count.* += 1;
+        } else {
+            try r_map.put(r_num, 1);
+        }
+    }
+
+    var map_iter = l_map.iterator();
+    var res: u32 = 0;
+    while (map_iter.next()) |entry| {
+        const count = r_map.get(entry.key_ptr.*) orelse 0;
+        res += entry.key_ptr.* * entry.value_ptr.* * count;
+    }
+
+    return res;
 }
 
 test "pop" {
